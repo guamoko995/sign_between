@@ -19,7 +19,7 @@ type expression struct {
 	// *По условию [9 8 7 6 5 4 3 2 1 0]
 	parameters []int
 
-	// Стратегия расстоновки знаков, выраженнае числом.
+	// Стратегии расстоновки знаков, выраженные числом.
 	// Если это число представить в троичной системе
 	// счисления, младший разряд будет отчечать за первый
 	// знак, следующий за второй и т.д. причем:
@@ -36,7 +36,7 @@ type expression struct {
 	// strategy = 6: 12-3
 	// strategy = 7: 1+2-3
 	// strategy = 8: 1-2-3
-	strategy int
+	strateges []int
 
 	// Значение справа от знака равно.
 	// *По условию 200
@@ -63,24 +63,27 @@ func (ex *expression) String() string {
 		return str + fmt.Sprint(ex.parameters[l]) + "=" + fmt.Sprint(ex.value) + " - не разрешимо"
 	}
 
-	// Если выражение разрешимо и решено, отображается решение
-	for i, p := range ex.parameters[:l] {
-		// К строке добавляется параметр
-		str += fmt.Sprint(p)
+	// Если выражение разрешимо и решено, отображаются решения
+	for _, strategy := range ex.strateges {
+		for i, p := range ex.parameters[:l] {
+			// К строке добавляется параметр
+			str += fmt.Sprint(p)
 
-		// Получает знак (или ничего) стоящий после i-того
-		// параметра, согласно стратегии расстановки
-		o := ReadeOperator(ex.strategy, i)
-		// К строке добавляется соответствующий знак знак (или ничего)
-		switch o {
-		case 1:
-			str += "+"
-		case 2:
-			str += "-"
+			// Получает знак (или ничего) стоящий после i-того
+			// параметра, согласно стратегии расстановки
+			o := ReadeOperator(strategy, i)
+			// К строке добавляется соответствующий знак знак (или ничего)
+			switch o {
+			case 1:
+				str += "+"
+			case 2:
+				str += "-"
+			}
 		}
+		// К строке добавляется последний параметр, знак равно и значение выражения.
+		str += fmt.Sprint(ex.parameters[l]) + "=" + fmt.Sprint(ex.value) + "\n"
 	}
-	// К строке добавляется последний параметр, знак равно и значение выражения.
-	return str + fmt.Sprint(ex.parameters[l]) + "=" + fmt.Sprint(ex.value)
+	return str
 }
 
 // Считывает операнд соединяя числа, начиная с числа с индексом cursor
@@ -144,9 +147,8 @@ func (ex *expression) Solve() {
 		// Если выражение истино, то в выражении сохраняется стратегия
 		// расстановки операторов и выставляется флаг разрешимости выражения
 		if firstOperand == ex.value {
-			ex.strategy = strategy
+			ex.strateges = append(ex.strateges, strategy)
 			ex.solvable = true
-			return
 		}
 	}
 }
@@ -155,6 +157,7 @@ func main() {
 	// Создаем выражение, соответствующее условию
 	s := &expression{
 		parameters: []int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0},
+		strateges:  make([]int, 0),
 		value:      200,
 	}
 

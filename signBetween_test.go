@@ -162,6 +162,7 @@ func TestSolve(t *testing.T) {
 	s := &expression{
 		parameters: []int{1, 2, 3, 6},
 		value:      18,
+		strateges:  make([]int, 0),
 	}
 
 	// Решение: 1+23-6=18
@@ -173,7 +174,7 @@ func TestSolve(t *testing.T) {
 
 	// Подбор стратегии
 	s.Solve()
-	addedSolve := s.strategy
+	addedSolve := s.strateges[0]
 
 	if !s.solvable {
 		t.Errorf("Expected: True, added: False.")
@@ -188,6 +189,7 @@ func TestSolve(t *testing.T) {
 	s = &expression{
 		parameters: []int{1, 2},
 		value:      12,
+		strateges:  make([]int, 0),
 	}
 
 	// Решение: 12=12
@@ -196,7 +198,7 @@ func TestSolve(t *testing.T) {
 
 	// Подбор стратегии
 	s.Solve()
-	addedSolve = s.strategy
+	addedSolve = s.strateges[0]
 
 	if !s.solvable {
 		t.Errorf("Expected: True, added: False.")
@@ -211,6 +213,7 @@ func TestSolve(t *testing.T) {
 	s = &expression{
 		parameters: []int{3, 2},
 		value:      1,
+		strateges:  make([]int, 0),
 	}
 
 	// Решение: 3-2=1
@@ -222,7 +225,7 @@ func TestSolve(t *testing.T) {
 
 	// Подбор стратегии
 	s.Solve()
-	addedSolve = s.strategy
+	addedSolve = s.strateges[0]
 
 	if !s.solvable {
 		t.Errorf("Expected: True, added: False.")
@@ -237,6 +240,7 @@ func TestSolve(t *testing.T) {
 	s = &expression{
 		parameters: []int{3, 2},
 		value:      4,
+		strateges:  make([]int, 0),
 	}
 
 	// Решения нет
@@ -245,14 +249,9 @@ func TestSolve(t *testing.T) {
 
 	// Подбор стратегии
 	s.Solve()
-	addedSolve = s.strategy
 
 	if s.solvable {
 		t.Errorf("Expected: False, added: True.")
-	}
-
-	if addedSolve != expSolve {
-		t.Errorf("Expected: %v, added: %v.", expSolve, addedSolve)
 	}
 }
 
@@ -267,11 +266,11 @@ func TestString(t *testing.T) {
 	s := &expression{
 		parameters: []int{1, 2, 3, 6, 5},
 		value:      43,
-		strategy:   11,
+		strateges:  []int{11},
 		solvable:   true,
 	}
 
-	exp := "1-23+65=43"
+	exp := "1-23+65=43\n"
 	added := s.String()
 
 	if added != exp {
